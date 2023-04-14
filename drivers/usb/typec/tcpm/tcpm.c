@@ -1504,7 +1504,14 @@ static bool svdm_consume_svids(struct tcpm_port *port, const u32 *p, int cnt)
 	int i;
 
 	for (i = 1; i < cnt; i++) {
-		u16 svid;
+		u16 svid, tmp_svid;
+
+                // hack for Ugreen CM512 Start
+		tmp_svid = (p[i] >> 16) & 0xffff;
+		if (tmp_svid == 0x1d5c) {
+			return false;
+                }
+                // hack for Ugreen CM512 End
 
 		svid = (p[i] >> 16) & 0xffff;
 		if (!svid)
@@ -1515,6 +1522,13 @@ static bool svdm_consume_svids(struct tcpm_port *port, const u32 *p, int cnt)
 
 		pmdata->svids[pmdata->nsvids++] = svid;
 		tcpm_log(port, "SVID %d: 0x%x", pmdata->nsvids, svid);
+
+                // hack for Ugreen CM512 Start
+		tmp_svid = p[i] & 0xffff;
+		if (tmp_svid == 0x1d5c) {
+			return false;
+                }
+                // hack for Ugreen CM512 End
 
 		svid = p[i] & 0xffff;
 		if (!svid)
